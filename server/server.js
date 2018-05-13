@@ -1,59 +1,44 @@
-import path from 'path'
-import Express from 'express'
-import favicon from 'serve-favicon'
-import httpProxy from 'http-proxy'
-import compression from 'compression'
-import connectHistoryApiFallback from 'connect-history-api-fallback'   //前端路由代理
-import config from '../config/config'
+const express = require('express')
+const app = express()
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser')
+const cookie = require('cookie-parser');
+const session = require('express-session')
 
-const app = new Express();
-const port = config.port;
+const configRoutes = require('./api')
+const config = require('./config/config')
+const allowCrossDomain = require('./headers/cross-domain')
 
-app.use('/api',(req,res)=>{
-    proxy.web(req,res,{target:targetUrl})
+app.use(allowCrossDomain);
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookie('express_react_cookie'));
+app.use(session({
+    secret:'express_react_cookie',
+    resave: true,
+    saveUninitialized:true,
+    cookie: {maxAge: 60 * 1000 * 30}//过期时间30min,单位毫秒
+}));
+
+mongoose.Promise = require('bluebird');
+mongoose.connect(`mongodb://${config.dbHost}:${config.dbPort}/${config.database}`, function (err) {
+    if (err) {
+        console.log(err, "\ndatabase connect fail");
+        return;
+    }
+    console.log('\ndatabase connect succeed');
 });
 
-
-app.use('/', connectHistoryApiFallback());
-app.use('/',Express.static(path.join(__dirname,"..",'build')));
-app.use('/',Express.static(path.join(__dirname,"..",'static')));
-
-
-const targetUrl = `http://${config.apiHost}:${config.apiPort}`;
-const proxy = httpProxy.createProxyServer({
-    target:targetUrl
-});
-
-app.use(compression());
-app.use(favicon(path.join(__dirname,'..','static','favicon.ico')));
-
-
-
-//热更新
-if(process.env.NODE_EVN!=='production'){
-    const Webpack = require('webpack');
-    const WebpackDevMiddleware = require('webpack-dev-middleware');
-    const WebpackHotMiddleware = require('webpack-hot-middleware');
-    const webpackConfig = require('../webpack.dev');
-
-    const compiler = Webpack(webpackConfig);
-
-    app.use(WebpackDevMiddleware(compiler, {
-        publicPath: '/',
-        stats: {colors: true},
-        lazy: false,
-        watchOptions: {
-            aggregateTimeout: 300,
-            poll: true
-        },
-    }));
-    app.use(WebpackHotMiddleware(compiler));
-}
-
-app.listen(port,(err)=>{
+app.listen(config.port,(err)=>{
     if(err){
         console.error(err)
     }else{
         console.log(`===>open http://${config.host}:${config.port} in a browser to view the app`);
     }
 });
+
+//crawler
+const schedule = require('./crawler/schedule')
+schedule.pic_crawler();
+
+configRoutes(app);

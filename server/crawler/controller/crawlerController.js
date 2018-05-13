@@ -1,4 +1,4 @@
-import Picture from '../../../models/picture'
+const Picture = require('../../models/picture')
 
 const savePictureModel = function (info) {
 

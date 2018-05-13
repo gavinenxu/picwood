@@ -1,0 +1,19 @@
+//authorize action
+export const LOGIN_SUCCESS = 'LOGIN_SUCCESS'
+export const LOGIN_FAIL = 'LOGIN_FAIL'
+export const LOGOUT = 'LOGOUT'
+export const SIGNUP_SUCCESS = 'SIGNUP_SUCCESS'
+export const SIGNUP_FAIL = 'SIGNUP_FAIL'
+
+//picture action
+export const GET_CATEGORIES = 'GET_CATEGORIES'
+export const SET_CATEGORY_SEARCH_TEXT = 'SET_CATEGORY_SEARCH_TEXT'
+export const GET_CATEGORY_ERROR = 'GET_CATEGORY_ERROR'
+export const GET_CATEGORY_SUCCESS = 'GET_CATEGORY_SUCCESS'
+
+export const GET_PICTURE = 'GET_PICTURE'
+export const GET_PICTURE_ERROR = 'GET_PICTURE_ERROR'
+export const GET_PICTURE_SUCCESS = 'GET_PICTURE_SUCCESS'
+
+export const ADD_TO_FAV = 'ADD_TO_FAV'
+export const REMOVE_FROM_FAV = 'REMOVE_FROM_FAV'

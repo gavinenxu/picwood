@@ -1,7 +1,7 @@
-import superagent from 'superagent'
-import cheerio from 'cheerio'
-import async from 'async'
-import crawlerController from './controller/crawlerController'
+const superagent = require('superagent')
+const cheerio =  require('cheerio')
+const async = require('async')
+const crawlerController = require('./controller/crawlerController')
 
 const base_url = "https://picjumbo.com/";
 
